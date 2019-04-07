@@ -31,6 +31,14 @@ namespace Simple_API_Database.Controllers
              Then, an instance of the HttpClient is created.
 
         */
+
+
+        List<string> symbolList = new List<string>
+        {
+            "AAPL", "MSFT", "GOOGL", "FB", "INTC", "CSCO", "ORCL", "SAP", "ADBE", "IBM", "NVDA", "TXN", "QCOM", "ADP", "INFY"
+            // Apple, Microsoft, Google, Facebook, Intel, Cisco, Oracle, SAP, Adobe, IBM, Nvidia, Texas Inst., Qualcomm, ADP, Infosys
+        };
+
         public HomeController(ApplicationDbContext context)
         {
             dbContext = context;
@@ -41,13 +49,15 @@ namespace Simple_API_Database.Controllers
                 System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
         }
 
+
+
         /*
             Calls the IEX reference API to get the list of symbols.
             Returns a list of the companies whose information is available. 
         */
         public List<Company> GetSymbols()
         {
-            string IEXTrading_API_PATH = BASE_URL + "ref-data/symbols";
+            string IEXTrading_API_PATH = BASE_URL + "ref-data/";
             string companyList = "";
             List<Company> companies = null;
 
@@ -66,10 +76,15 @@ namespace Simple_API_Database.Controllers
             {
                 // https://stackoverflow.com/a/46280739
                 companies = JsonConvert.DeserializeObject<List<Company>>(companyList);
-                companies = companies.GetRange(0, 50);
+                companies = ccompanies.getRange;
             }
 
             return companies;
+        }
+
+        private bool setSymbols(companies c)
+        {
+            return (symbolList.Contains(c.symbol));
         }
 
         public IActionResult Index()
@@ -132,6 +147,13 @@ namespace Simple_API_Database.Controllers
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
+
+        public IActionResult About()
+        {
+            ViewData["Message"] = "Your application description page.";
+
+            return View();
         }
     }
 }

@@ -148,5 +148,7 @@ namespace Simple_API_Database.Controllers
         {
             return View();
         }
+
+        
     }
 }

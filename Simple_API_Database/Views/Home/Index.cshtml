@@ -4,8 +4,11 @@
 
 @model IEnumerable<Simple_API_Database.Models.EF_Models.Company>
 
-<h2>Symbols</h2>
+<h2>Random Range of Company Symbols</h2>
 <hr />
+<b>
+    <h3>Below are a random selection of companies. Click the save button below.</h3>
+</b>
 
 <table class="table">
     <thead>
@@ -50,3 +53,8 @@
         }
     </tbody>
 </table>
+<tr>
+    <td>
+        <a id="dbopt" asp-controller="Home" asp-action="PopulateSymbols"><img src="~/img/button_save-data.png" /></a>
+    </td>
+</tr>

@@ -32,13 +32,6 @@ namespace Simple_API_Database.Controllers
 
         */
 
-
-        List<string> symbolList = new List<string>
-        {
-            "AAPL", "MSFT", "GOOGL", "FB", "INTC", "CSCO", "ORCL", "SAP", "ADBE", "IBM", "NVDA", "TXN", "QCOM", "ADP", "INFY"
-            // Apple, Microsoft, Google, Facebook, Intel, Cisco, Oracle, SAP, Adobe, IBM, Nvidia, Texas Inst., Qualcomm, ADP, Infosys
-        };
-
         public HomeController(ApplicationDbContext context)
         {
             dbContext = context;
@@ -48,6 +41,12 @@ namespace Simple_API_Database.Controllers
             httpClient.DefaultRequestHeaders.Accept.Add(new
                 System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
         }
+
+
+
+
+
+
 
 
 
@@ -139,7 +138,8 @@ namespace Simple_API_Database.Controllers
 
 
 
-
+        //--------------------------------------------------------------------------------
+        // Links to other views and failsafe
         public IActionResult Privacy()
         {
             return View();
@@ -157,15 +157,109 @@ namespace Simple_API_Database.Controllers
         }
 
 
+
+
+
+
+        //---------------------------------------------------------------------------------------
+        // News API Endpoint
         public List<News> Getdatetime()
+        {
+            string IEXTrading_API_PATH = BASE_URL + "stock/market/news/last/5";
+            string newsList = "";
+            List<News> news_all = null;
+
+            // connect to the IEXTrading API and retrieve information
+            httpClient.BaseAddress = new Uri(IEXTrading_API_PATH);
+            HttpResponseMessage response = httpClient.GetAsync(IEXTrading_API_PATH).GetAwaiter().GetResult();
+
+            // read the Json objects in the API response
+            if (response.IsSuccessStatusCode)
+            {
+                newsList = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+            }
+
+            // now, parse the Json strings as C# objects
+            if (!newsList.Equals(""))
+            {
+                // https://stackoverflow.com/a/46280739
+                news_all = JsonConvert.DeserializeObject<List<News>>(newsList);
+                news_all = news_all.GetRange(0, 5);
+            }
+            return news_all;
+        }
+
+        public IActionResult News()
+        {
+            //Set ViewBag variable first
+            ViewBag.dbSuccessNews = 0;
+            List<News> news_all = Getdatetime();
+
+            //Save news_all in TempData, so they do not have to be retrieved again
+            TempData["News_all"] = JsonConvert.SerializeObject(news_all);
+            return View(news_all);
+        }
+
+        /*
+            The Datetime action calls the Getdatetime method that returns a list of News_all.
+            This list of News_all is passed to the Datetime View.
+        */
+
+        public IActionResult Datetime()
+        {
+            //Set ViewBag variable first
+            ViewBag.dbSuccessComp = 0;
+            List<News> news_all = Getdatetime();
+
+            //Save news_all in TempData, so they do not have to be retrieved again
+            TempData["News_all"] = JsonConvert.SerializeObject(news_all);
+            return View(news_all);
+        }
+
+        /*
+            Save the available symbols in the database
+        */
+
+        public IActionResult PopulateDatetime()
+        {
+            // Retrieve the news_all that were saved in the symbols method
+            List<News> news_all = JsonConvert.DeserializeObject<List<News>>(TempData["News_all"].ToString());
+            foreach (News news in news_all)
+            {
+                //Database will give PK constraint violation error when trying to insert record with existing PK.
+                //So add news only if it doesnt exist, check existence using symbol (PK)
+                if (dbContext.News_all.Where(c => c.datetime.Equals(news.datetime)).Count() == 0)
+                {
+                    dbContext.News_all.Add(news);
+                }
+            }
+
+            dbContext.SaveChanges();
+            ViewBag.dbSuccessNews = 1;
+            return View("News", news_all);
+        }
+
+
+
+
+
+
+
+
+
+        //---------------------------------------------------------------------------------------
+
+        // Quote API Endpoint
+
+        public List<Quotes> GetQuoteSymbol()
 
         {
 
-            string IEXTrading_API_PATH = BASE_URL + "stock/market/news/last/5";
+            string IEXTrading_API_PATH = BASE_URL + "/stock/market/previous";
 
-            string newsList = "";
+            string quoteList = "";
 
-            List<News> news_all = null;
+            List<Quotes> Quotes = null;
 
 
 
@@ -183,7 +277,7 @@ namespace Simple_API_Database.Controllers
 
             {
 
-                newsList = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+                quoteList = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
 
             }
 
@@ -191,45 +285,41 @@ namespace Simple_API_Database.Controllers
 
             // now, parse the Json strings as C# objects
 
-            if (!newsList.Equals(""))
+            if (!quoteList.Equals(""))
 
             {
 
                 // https://stackoverflow.com/a/46280739
 
-                news_all = JsonConvert.DeserializeObject<List<News>>(newsList);
+                Quotes = JsonConvert.DeserializeObject<List<Quotes>>(quoteList);
 
-                news_all = news_all.GetRange(0,5);
+                Quotes = Quotes.GetRange(0, 5);
 
             }
 
-
-
-            return news_all;
+            return Quotes;
 
         }
 
 
 
-        public IActionResult News()
+        public IActionResult Quote()
 
         {
 
             //Set ViewBag variable first
 
-            ViewBag.dbSuccessComp = 0;
+            ViewBag.dbSuccessQuote = 0;
 
-            List<News> news_all = Getdatetime();
-
-
-
-            //Save news_all in TempData, so they do not have to be retrieved again
-
-            TempData["News_all"] = JsonConvert.SerializeObject(news_all);
+            List<Quotes> Quotes = GetQuoteSymbol();
 
 
 
-            return View(news_all);
+            //Save Quotes in TempData, so they do not have to be retrieved again
+
+            TempData["Quotes"] = JsonConvert.SerializeObject(Quotes);
+
+            return View(Quotes);
 
         }
 
@@ -237,31 +327,31 @@ namespace Simple_API_Database.Controllers
 
         /*
 
-            The Datetime action calls the Getdatetime method that returns a list of News_all.
+            The Datetime action calls the GetSymbols method that returns a list of Quotes.
 
-            This list of News_all is passed to the Datetime View.
+            This list of Quotes is passed to the Datetime View.
 
         */
 
-        public IActionResult Datetime()
+
+
+        public IActionResult QuoteSymbols()
 
         {
 
             //Set ViewBag variable first
 
-            ViewBag.dbSuccessComp = 0;
+            ViewBag.dbSuccessQuote = 0;
 
-            List<News> news_all = Getdatetime();
-
-
-
-            //Save news_all in TempData, so they do not have to be retrieved again
-
-            TempData["News_all"] = JsonConvert.SerializeObject(news_all);
+            List<Quotes> Quotes = GetQuoteSymbol();
 
 
 
-            return View(news_all);
+            //Save Quotes in TempData, so they do not have to be retrieved again
+
+            TempData["Quotes"] = JsonConvert.SerializeObject(Quotes);
+
+            return View(Quotes);
 
         }
 
@@ -273,29 +363,29 @@ namespace Simple_API_Database.Controllers
 
         */
 
-        public IActionResult PopulateDatetime()
+
+
+        public IActionResult PopulateQuotes()
 
         {
 
-            // Retrieve the news_all that were saved in the symbols method
+            // Retrieve the Quotes that were saved in the symbols method
 
-            List<News> news_all = JsonConvert.DeserializeObject<List<News>>(TempData["News_all"].ToString());
+            List<Quotes> Quotes = JsonConvert.DeserializeObject<List<Quotes>>(TempData["Quotes"].ToString());
 
-
-
-            foreach (News news in news_all)
+            foreach (Quotes quote in Quotes)
 
             {
 
                 //Database will give PK constraint violation error when trying to insert record with existing PK.
 
-                //So add news only if it doesnt exist, check existence using symbol (PK)
+                //So add quote only if it doesnt exist, check existence using symbol (PK)
 
-                if (dbContext.News_all.Where(c => c.datetime.Equals(news.datetime)).Count() == 0)
+                if (dbContext.Quote.Where(c => c.symbol.Equals(quote.symbol)).Count() == 0)
 
                 {
 
-                    dbContext.News_all.Add(news);
+                    dbContext.Quote.Add(quote);
 
                 }
 
@@ -305,15 +395,12 @@ namespace Simple_API_Database.Controllers
 
             dbContext.SaveChanges();
 
-            ViewBag.dbSuccessNews = 1;
+            ViewBag.dbSuccessQuote = 1;
 
-            return View("News", news_all);
+            return View("Quotes", Quotes);
 
         }
 
 
-
     }
-
-
 }

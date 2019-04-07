@@ -13,5 +13,6 @@ namespace Simple_API_Database.DataAccess
 
         public DbSet<Company> Companies { get; set; }
         public DbSet<News> News_all { get; set; }
+        public DbSet<Quotes> Quote { get; set; }
     }
 }

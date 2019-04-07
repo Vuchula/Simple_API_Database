@@ -293,7 +293,7 @@ namespace Simple_API_Database.Controllers
 
                 Quotes = JsonConvert.DeserializeObject<List<Quotes>>(quoteList);
 
-                Quotes = Quotes.GetRange(0, 5);
+                Quotes = Quotes.GetRange(1814, 20);
 
             }
 

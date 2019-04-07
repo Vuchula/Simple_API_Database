@@ -38,10 +38,6 @@ namespace Simple_API_Database.Controllers
             "AAPL", "MSFT", "GOOGL", "FB", "INTC", "CSCO", "ORCL", "SAP", "ADBE", "IBM", "NVDA", "TXN", "QCOM", "ADP", "INFY"
             // Apple, Microsoft, Google, Facebook, Intel, Cisco, Oracle, SAP, Adobe, IBM, Nvidia, Texas Inst., Qualcomm, ADP, Infosys
         };
-        List<int> symbolIndex = new List<int>
-        {
-            13,5188,3410,2706,4102,1712,5787,6794,84,3882,7833,6376,96,4075
-        }; 
 
         public HomeController(ApplicationDbContext context)
         {
@@ -150,8 +146,6 @@ namespace Simple_API_Database.Controllers
 
         public IActionResult About()
         {
-            ViewData["Message"] = "Your application description page.";
-
             return View();
         }
     }

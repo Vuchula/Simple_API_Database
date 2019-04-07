@@ -15,5 +15,14 @@ namespace Simple_API_Database.Models
             public string type { get; set; }
             public string iexId { get; set; }
         }
+
+        public class News
+        {
+            [Key]
+            public string datetime { get; set; }
+            public string headline { get; set; }
+            public string source { get; set; }
+            public string summary { get; set; }
+        }
     }
 }

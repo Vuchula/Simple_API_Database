@@ -76,7 +76,7 @@ namespace Simple_API_Database.Controllers
             {
                 // https://stackoverflow.com/a/46280739
                 companies = JsonConvert.DeserializeObject<List<Company>>(companyList);
-                companies = companies.GetRange(1814,20);
+                companies = companies.GetRange(1814, 20);
             }
 
             return companies;
@@ -133,6 +133,13 @@ namespace Simple_API_Database.Controllers
             return View("Index", companies);
         }
 
+
+
+
+
+
+
+
         public IActionResult Privacy()
         {
             return View();
@@ -149,6 +156,164 @@ namespace Simple_API_Database.Controllers
             return View();
         }
 
-        
+
+        public List<News> Getdatetime()
+
+        {
+
+            string IEXTrading_API_PATH = BASE_URL + "stock/market/news/last/5";
+
+            string newsList = "";
+
+            List<News> news_all = null;
+
+
+
+            // connect to the IEXTrading API and retrieve information
+
+            httpClient.BaseAddress = new Uri(IEXTrading_API_PATH);
+
+            HttpResponseMessage response = httpClient.GetAsync(IEXTrading_API_PATH).GetAwaiter().GetResult();
+
+
+
+            // read the Json objects in the API response
+
+            if (response.IsSuccessStatusCode)
+
+            {
+
+                newsList = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+
+            }
+
+
+
+            // now, parse the Json strings as C# objects
+
+            if (!newsList.Equals(""))
+
+            {
+
+                // https://stackoverflow.com/a/46280739
+
+                news_all = JsonConvert.DeserializeObject<List<News>>(newsList);
+
+                news_all = news_all.GetRange(0,5);
+
+            }
+
+
+
+            return news_all;
+
+        }
+
+
+
+        public IActionResult News()
+
+        {
+
+            //Set ViewBag variable first
+
+            ViewBag.dbSuccessComp = 0;
+
+            List<News> news_all = Getdatetime();
+
+
+
+            //Save news_all in TempData, so they do not have to be retrieved again
+
+            TempData["News_all"] = JsonConvert.SerializeObject(news_all);
+
+
+
+            return View(news_all);
+
+        }
+
+
+
+        /*
+
+            The Datetime action calls the Getdatetime method that returns a list of News_all.
+
+            This list of News_all is passed to the Datetime View.
+
+        */
+
+        public IActionResult Datetime()
+
+        {
+
+            //Set ViewBag variable first
+
+            ViewBag.dbSuccessComp = 0;
+
+            List<News> news_all = Getdatetime();
+
+
+
+            //Save news_all in TempData, so they do not have to be retrieved again
+
+            TempData["News_all"] = JsonConvert.SerializeObject(news_all);
+
+
+
+            return View(news_all);
+
+        }
+
+
+
+        /*
+
+            Save the available symbols in the database
+
+        */
+
+        public IActionResult PopulateDatetime()
+
+        {
+
+            // Retrieve the news_all that were saved in the symbols method
+
+            List<News> news_all = JsonConvert.DeserializeObject<List<News>>(TempData["News_all"].ToString());
+
+
+
+            foreach (News news in news_all)
+
+            {
+
+                //Database will give PK constraint violation error when trying to insert record with existing PK.
+
+                //So add news only if it doesnt exist, check existence using symbol (PK)
+
+                if (dbContext.News_all.Where(c => c.datetime.Equals(news.datetime)).Count() == 0)
+
+                {
+
+                    dbContext.News_all.Add(news);
+
+                }
+
+            }
+
+
+
+            dbContext.SaveChanges();
+
+            ViewBag.dbSuccessNews = 1;
+
+            return View("News", news_all);
+
+        }
+
+
+
     }
+
+
 }

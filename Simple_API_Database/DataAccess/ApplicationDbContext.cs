@@ -12,5 +12,6 @@ namespace Simple_API_Database.DataAccess
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
 
         public DbSet<Company> Companies { get; set; }
+        public DbSet<News> News_all { get; set; }
     }
 }

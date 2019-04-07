@@ -1,0 +1,60 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+@model IEnumerable<Simple_API_Database.Models.EF_Models.News>
+
+<h2>News Articles</h2>
+<hr />
+<b>
+    <h3>Below are news articles pertaining to stock companies. Click the save button below.</h3>
+</b>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Date/Time
+            </th>
+            <th>
+                Headline
+            </th>
+            <th>
+                Source
+            </th>
+            <th>
+                Summary
+            </th>
+        </tr>
+    </thead>
+
+    <tbody>
+
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.datetime)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.headline)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.source)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.summary)
+                </td>
+            </tr>
+        }
+
+        @{
+            Model.Count();
+        }
+    </tbody>
+</table>
+<tr>
+    <td>
+        <a id="dbopt" asp-controller="Home" asp-action="PopulateDatetime"><img src="~/img/button_save-data.png" /></a>
+    </td>
+</tr>

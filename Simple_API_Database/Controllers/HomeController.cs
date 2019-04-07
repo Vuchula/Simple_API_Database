@@ -57,7 +57,7 @@ namespace Simple_API_Database.Controllers
         */
         public List<Company> GetSymbols()
         {
-            string IEXTrading_API_PATH = BASE_URL + "ref-data/";
+            string IEXTrading_API_PATH = BASE_URL + "ref-data/symbols";
             string companyList = "";
             List<Company> companies = null;
 
@@ -76,15 +76,10 @@ namespace Simple_API_Database.Controllers
             {
                 // https://stackoverflow.com/a/46280739
                 companies = JsonConvert.DeserializeObject<List<Company>>(companyList);
-                companies = ccompanies.getRange;
+                companies = companies.GetRange(13, 1);
             }
 
             return companies;
-        }
-
-        private bool setSymbols(companies c)
-        {
-            return (symbolList.Contains(c.symbol));
         }
 
         public IActionResult Index()

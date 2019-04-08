@@ -25,16 +25,12 @@ namespace Simple_API_Database.Models
             public string summary { get; set; }
         }
 
-        public class Quotes
+        public class Sector
         {
             [Key]
-            public string symbol { get; set; }
-            public string date { get; set; }
-            public double open { get; set; }
-            public double close { get; set; }
-            public double high { get; set; }
-            public double low { get; set; }
-            public double changePercent { get; set; }
+            public string type { get; set; }
+            public string name { get; set; }
+            public float performance { get; set; }
 
         }
     }

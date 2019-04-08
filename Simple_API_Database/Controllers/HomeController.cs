@@ -251,156 +251,86 @@ namespace Simple_API_Database.Controllers
 
         // Quote API Endpoint
 
-        public List<Quotes> GetQuoteSymbol()
-
+        public List<Sector> Gettype()
         {
-
-            string IEXTrading_API_PATH = BASE_URL + "/stock/market/previous";
-
-            string quoteList = "";
-
-            List<Quotes> Quotes = null;
-
-
+            string IEXTrading_API_PATH = BASE_URL + "/stock/market/sector-performance";
+            string sectorList = "";
+            List<Sector> sector_all = null;
 
             // connect to the IEXTrading API and retrieve information
-
             httpClient.BaseAddress = new Uri(IEXTrading_API_PATH);
-
             HttpResponseMessage response = httpClient.GetAsync(IEXTrading_API_PATH).GetAwaiter().GetResult();
-
-
-
+            
             // read the Json objects in the API response
-
             if (response.IsSuccessStatusCode)
-
             {
-
-                quoteList = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
-
+                sectorList = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
             }
-
-
 
             // now, parse the Json strings as C# objects
-
-            if (!quoteList.Equals(""))
-
+            if (!sectorList.Equals(""))
             {
-
                 // https://stackoverflow.com/a/46280739
-
-                Quotes = JsonConvert.DeserializeObject<List<Quotes>>(quoteList);
-
-                Quotes = Quotes.GetRange(1814, 20);
-
+                sector_all = JsonConvert.DeserializeObject<List<Sector>>(sectorList);
+                sector_all = sector_all.GetRange(0, 5);
             }
-
-            return Quotes;
-
+            return sector_all;
         }
 
-
-
-        public IActionResult Quote()
-
+        public IActionResult Sector()
         {
-
             //Set ViewBag variable first
+            ViewBag.dbSuccessSector = 0;
+            List<Sector> sector_all = Gettype();
 
-            ViewBag.dbSuccessQuote = 0;
-
-            List<Quotes> Quotes = GetQuoteSymbol();
-
-
-
-            //Save Quotes in TempData, so they do not have to be retrieved again
-
-            TempData["Quotes"] = JsonConvert.SerializeObject(Quotes);
-
-            return View(Quotes);
-
+            //Save sector_all in TempData, so they do not have to be retrieved again
+            TempData["Sector_all"] = JsonConvert.SerializeObject(sector_all);
+            return View(sector_all);
         }
-
-
 
         /*
-
-            The Datetime action calls the GetSymbols method that returns a list of Quotes.
-
-            This list of Quotes is passed to the Datetime View.
-
+            The Type action calls the Gettype method that returns a list of Sector_all.
+            This list of Sector_all is passed to the Type View.
         */
 
-
-
-        public IActionResult QuoteSymbols()
-
+        public IActionResult Type()
         {
-
             //Set ViewBag variable first
+            ViewBag.dbSuccessSec = 0;
+            List<Sector> sector_all = Gettype();
 
-            ViewBag.dbSuccessQuote = 0;
-
-            List<Quotes> Quotes = GetQuoteSymbol();
-
-
-
-            //Save Quotes in TempData, so they do not have to be retrieved again
-
-            TempData["Quotes"] = JsonConvert.SerializeObject(Quotes);
-
-            return View(Quotes);
-
+            //Save sector_all in TempData, so they do not have to be retrieved again
+            TempData["Sector_all"] = JsonConvert.SerializeObject(sector_all);
+            return View(sector_all);
         }
 
-
-
         /*
-
             Save the available symbols in the database
-
         */
 
-
-
-        public IActionResult PopulateQuotes()
-
+        public IActionResult PopulateType()
         {
-
-            // Retrieve the Quotes that were saved in the symbols method
-
-            List<Quotes> Quotes = JsonConvert.DeserializeObject<List<Quotes>>(TempData["Quotes"].ToString());
-
-            foreach (Quotes quote in Quotes)
-
+            // Retrieve the sector_all that were saved in the symbols method
+            List<Sector> sector_all = JsonConvert.DeserializeObject<List<Sector>>(TempData["Sector_all"].ToString());
+            foreach (Sector sector in sector_all)
             {
-
                 //Database will give PK constraint violation error when trying to insert record with existing PK.
-
-                //So add quote only if it doesnt exist, check existence using symbol (PK)
-
-                if (dbContext.Quote.Where(c => c.symbol.Equals(quote.symbol)).Count() == 0)
-
-                {
-
-                    dbContext.Quote.Add(quote);
-
+                //So add sector only if it doesnt exist, check existence using symbol (PK)
+                if (dbContext.Sector_all.Where(c => c.type.Equals(sector.type)).Count() == 0)
+                { 
+                    dbContext.Sector_all.Add(sector);
                 }
-
             }
-
-
-
             dbContext.SaveChanges();
-
-            ViewBag.dbSuccessQuote = 1;
-
-            return View("Quotes", Quotes);
-
+            ViewBag.dbSuccessSector = 1;
+            return View("Sector", sector_all);
         }
 
+
+
+
+
+        //-------------------------------------------------------------------------------------------
 
     }
 }

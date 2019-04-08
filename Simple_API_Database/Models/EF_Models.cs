@@ -31,7 +31,17 @@ namespace Simple_API_Database.Models
             public string type { get; set; }
             public string name { get; set; }
             public float performance { get; set; }
+        }
 
+        public class Loser
+        {
+            [Key]
+            public string symbol { get; set; }
+            public string companyName { get; set; }
+            public string primaryExchange { get; set; }
+            public string sector { get; set; }
+            public float open { get; set; }
+            public float close { get; set; }
         }
     }
 }

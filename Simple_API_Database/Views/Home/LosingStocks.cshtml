@@ -1,0 +1,71 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+@model IEnumerable<Simple_API_Database.Models.EF_Models.Loser>
+
+<h2>Losing Stocks</h2>
+<hr />
+<b>
+    <h3>Below is info pertaining to losing stocks, those with the lowest ratings. These are to be avoided. Click the save button below.</h3>
+</b>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Symbol
+            </th>
+            <th>
+                Name
+            </th>
+            <th>
+                Primary Exchange
+            </th>
+            <th>
+                Sector
+            </th>
+            <th>
+                Open Price
+            </th>
+            <th>
+                Closing Price
+            </th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (var item in Model)
+        {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.symbol)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.companyName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.primaryExchange)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.sector)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.open)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.close)
+            </td>
+        </tr>
+        }
+
+        @{
+            Model.Count();
+        }
+    </tbody>
+</table>
+<tr>
+    <td>
+        <a id="dbopt" asp-controller="Home" asp-action="PopulateLosingSymb"><img src="~/img/button_save-data.png" /></a>
+    </td>
+</tr>

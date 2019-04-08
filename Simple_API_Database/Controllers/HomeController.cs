@@ -478,7 +478,7 @@ namespace Simple_API_Database.Controllers
 
             ViewBag.dbSuccessloser = 1;
 
-            return View("loser", loser_all);
+            return View("LosingStocks", loser_all);
 
         }
 

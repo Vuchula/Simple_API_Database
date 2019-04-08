@@ -405,7 +405,7 @@ namespace Simple_API_Database.Controllers
 
             dbContext.SaveChanges();
             ViewBag.dbSuccessloser = 1;
-            return View("LosingStocks", loser_all);
+            return View("loser", loser_all);
         }
 
 
@@ -486,7 +486,7 @@ namespace Simple_API_Database.Controllers
 
             dbContext.SaveChanges();
             ViewBag.dbSuccessgainer = 1;
-            return View("gainer", gainer_all);
+            return View("Gainer", gainer_all);
         }
     }
 }

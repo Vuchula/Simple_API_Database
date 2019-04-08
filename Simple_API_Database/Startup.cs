@@ -62,7 +62,7 @@ namespace Simple_API_Database
             {
                 routes.MapRoute(
                     name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
+                    template: "{controller=Home}/{action=News}/{id?}");
             });
         }
     }
